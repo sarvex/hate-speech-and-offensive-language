@@ -62,9 +62,7 @@ def tokenize(tweet):
     """Removes punctuation & excess whitespace, sets to lowercase,
     and stems tweets. Returns a list of stemmed tokens."""
     tweet = " ".join(re.split("[^a-zA-Z]*", tweet.lower())).strip()
-    #tokens = re.split("[^a-zA-Z]*", tweet.lower())
-    tokens = [stemmer.stem(t) for t in tweet.split()]
-    return tokens
+    return [stemmer.stem(t) for t in tweet.split()]
 
 def basic_tokenize(tweet):
     """Same as tokenize but without the stemming"""
@@ -135,18 +133,24 @@ def other_features_(tweet):
     FRE = round(206.835 - 1.015*(float(num_words)/1.0) - (84.6*float(avg_syl)),2)
 
     twitter_objs = count_twitter_objs(tweet) #Count #, @, and http://
-    features = [FKRA, FRE, syllables, num_chars, num_chars_total, num_terms, num_words,
-                num_unique_terms, sentiment['compound'],
-                twitter_objs[2], twitter_objs[1],]
-    #features = pandas.DataFrame(features)
-    return features
+    return [
+        FKRA,
+        FRE,
+        syllables,
+        num_chars,
+        num_chars_total,
+        num_terms,
+        num_words,
+        num_unique_terms,
+        sentiment['compound'],
+        twitter_objs[2],
+        twitter_objs[1],
+    ]
 
 def get_oth_features(tweets):
     """Takes a list of tweets, generates features for
     each tweet, and returns a numpy array of tweet x features"""
-    feats=[]
-    for t in tweets:
-        feats.append(other_features_(t))
+    feats = [other_features_(t) for t in tweets]
     return np.array(feats)
 
 
@@ -185,8 +189,7 @@ def predictions(X, model):
     the trained model to generated a predicted y
     value for each observation.
     """
-    y_preds = model.predict(X)
-    return y_preds
+    return model.predict(X)
 
 def class_to_name(class_label):
     """
